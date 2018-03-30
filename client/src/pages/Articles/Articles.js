@@ -31,10 +31,33 @@ class Articles extends Component {
     console.log("Reached Articles.js/loadArticles function");
     API.getArticles()
       .then(res =>
-        this.setState({ articles: res.data, topic: "" })
+        this.setState({ results: res.data, topic: "" })
       )
       .catch(err => console.log(err));
   };
+
+  //function to save an article
+  saveArticle = (article) => {
+  //creating new article object
+      let newArticle = {
+          title: article.headline.main,
+          date: article.pub_date,
+          url: article.web_url,
+          saved: true,
+          summary: article.snippet
+      }
+      console.log("In src/pages/Articles.js/save Article. To save Article: ", newArticle);
+  
+      //calling the API
+      API
+        .saveArticle(newArticle)
+        .then(results => {
+          //removing the saved article from the results in state
+          let unsavedArticles = this.state.results.filter(article => article.headline.main !== newArticle.title)
+          this.setState({results: unsavedArticles})
+        })
+        .catch(err => console.log(err));
+  } //saveArticle function
 
   deleteArticle = id => {
     API.deleteArticle(id)
@@ -68,9 +91,11 @@ class Articles extends Component {
         //   })
         // )
         .then(res => {
+        // .then(res => this.loadArticles())
           console.log("Search response is: ", res);
           this.setState({
               results: res.data,
+              //results: res.data.response.docs,
               showResults: true,
               error:"",
               topic: "",
@@ -81,28 +106,10 @@ class Articles extends Component {
         }
         )
         .catch(err => console.log(err));
-      }
-    
-    
-       //   API.getArticlesByTopic({
-    //     query
-    //   })
-    //     // .then(res => this.loadArticles())
-    //   .then(res => {
-    //     console.log(res.json());
-    //     console.log("Search response is: ", res.data.response.docs);
-    //     // this.setState({
-    //     //   results: res.data.response.docs,
-    //     //   showResults: true,
-    //     //   error:"",
-    //     //   topic: "",
-    //     //   startyear: "",
-    //     //   endyear: ""
-    //     // })
-    //   })
-    //   .catch(err => 
-    //     this.setState({error: err.message}));
-    // } //if
+        //   .catch(err => 
+        //    this.setState({error: err.message}));
+
+    } //if
   }; //handleFormSubmit
 
   render() {
@@ -177,7 +184,7 @@ class Articles extends Component {
                         )
                       )
                     }
-                      <FormBtn type='warning' additional='btn-block' onClick={this.getMoreResults}>Get more results</FormBtn>
+                    <FormBtn type='warning' additional='btn-block' onClick={this.getMoreResults}>Get more results</FormBtn>
                   </PanelBody>
                 </Panel>
               ) : ''
