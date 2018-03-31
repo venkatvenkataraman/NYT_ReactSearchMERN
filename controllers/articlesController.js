@@ -16,16 +16,16 @@ module.exports = {
       .catch(err => res.status(422).json(err));
   },
   create: function(req, res) {
-    console.log("In articlesController.js/create");
+    console.log("In articlesController.js/create req.body: ", req.body);
     const article = {
-      // _id: req.body._id,
-      title: req.body.title,  //headline.main,
-      date: req.body.date,
-      url: req.body.url,  //web_url,
+      _id: req.body._id,
+      title: req.body.headline.main,
+      date: req.body.pub_date,
+      url: req.body.web_url,
       saved: true,
-      summary: req.body.summary
+      summary: req.body.snippet
     };
-    console.log("In articlesController.js/create", article);
+    console.log("In articlesController.js/create article: ", article);
     db.Article
       .create(article)
       .then(dbArticle => res.json(dbArticle))
